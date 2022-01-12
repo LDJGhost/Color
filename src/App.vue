@@ -1,8 +1,6 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
+  <h1>七彩评价</h1>
+  <!-- 路由的出口 -->
   <router-view/>
 </template>
 
