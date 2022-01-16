@@ -33,6 +33,11 @@ const routes = [
         component: () => import('@/views/my/')
       }
     ]
+  },
+  {
+    path: '/courseInfo',
+    name: 'courseInfoIndex',
+    component: () => import('@/views/home/courseInfo')
   }
 ]
 
