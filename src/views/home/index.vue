@@ -49,8 +49,8 @@
         <div class="card-item-wrap"
           v-for="(item, index) in courseList"
           :key="index" >
+          <router-link :to="{name:'courseInfoIndex', params:{id:item.code}}" >
           <van-image :src="item.img" class="card-img" />
-          <router-link :to="{name:'courseInfoIndex',query:{id:item.id}}">
             <div class="info-wrap">
               <van-icon size="25" :name="require('../../assets//add-icon.png')" class="info-type-icon"   />
               <span class="grade">{{item.grade}}</span>
@@ -72,17 +72,17 @@
         </van-cell>
       </div>
       <div class="card-list-wrap">
-        <router-link :to="{name:'courseInfoIndex',query:{id:item.id}}">
           <div class="card-item-wrap"
             v-for="(item, index) in associationList"
             :key="index" >
+            <router-link :to="{name:'courseInfoIndex',params:{id:item.code}}" >
             <van-image :src="item.img" class="card-img" />
             <div class="info-wrap">
               <van-icon size="25" :name="require('../../assets//add-icon.png')" class="info-type-icon"   />
               <span class="grade">{{item.name}}</span>
             </div>
+            </router-link>
           </div>
-        </router-link>
       </div>
     </div>
      <div class="card-wrap">
@@ -137,6 +137,7 @@ export default {
       courseList: [
         {
           id: 1,
+          code: '#123',
           img: 'http://qiniu.fmg.net.cn/picture-1642130954000',
           grade: '三年级',
           class: '1班',
@@ -144,6 +145,7 @@ export default {
         }, {
           id: 2,
           img: 'http://qiniu.fmg.net.cn/picture-1642130954000',
+          code: '#123',
           grade: '三年级',
           class: '1班',
           expert: '语文'
@@ -153,10 +155,12 @@ export default {
         {
           id: 1,
           img: 'http://qiniu.fmg.net.cn/picture-1642130954000',
+          code: '#123',
           name: '英语社'
         }, {
           id: 2,
           img: 'http://qiniu.fmg.net.cn/picture-1642130954000',
+          code: '#123',
           name: '数学社'
         }
       ]

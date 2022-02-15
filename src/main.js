@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import echarts from 'echarts'
 
 // 自动设置 REM 基准值 （html标签字体大小适配）
 import 'amfe-flexible'
@@ -14,4 +15,4 @@ import { Button, Icon } from 'vant'
 
 // 创建 Vue 根实例，将 router，store 配置到根实例中
 // 把 App 根组件渲染到 #app 节点
-createApp(App).use(store).use(router).use(Button).use(Icon).mount('#app')
+createApp(App).use(store).use(router).use(Button).use(Icon).use(echarts).mount('#app')

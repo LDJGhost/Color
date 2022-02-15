@@ -38,6 +38,21 @@ const routes = [
     path: '/courseInfo',
     name: 'courseInfoIndex',
     component: () => import('@/views/home/courseInfo')
+  },
+  {
+    path: '/detailIndex',
+    name: 'detailInfoIndex',
+    component: () => import('@/views/discipline/detailIndex')
+  },
+  {
+    path: '/commentStatistics',
+    name: 'commentStatisticsIndex',
+    component: () => import('@/views/home/commentStatistics')
+  },
+  {
+    path: '/finalExam',
+    name: 'finalExamIndex',
+    component: () => import('@/views/home/finalExam')
   }
 ]
 
