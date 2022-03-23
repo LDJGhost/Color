@@ -12,7 +12,7 @@
       <van-icon size="60" :name="require('../../assets/head-img.jpeg')" badge="3" class="head-img" />
     </div>
     <div class="state-info-wrap">
-      <div class="state-item-wrap">
+      <div class="state-item-wrap" @click="toCourseList" >
         <van-icon size="25" :name="require('../../assets/home-course.png')" class="home-course-img" />
         <div class='state-name'>课程</div>
         <div class='state-number'>12</div>
@@ -22,14 +22,14 @@
         <div class='state-name'>社团</div>
         <div class='state-number'>4</div>
       </div>
-      <div class="state-item-wrap">
+      <div class="state-item-wrap" @click="toExamAprove">
         <van-icon size="25" :name="require('../../assets/home-check.png')" class="home-course-img" />
         <div class='state-name'>审核</div>
         <div class='state-number'>3</div>
       </div>
     </div>
     <div class="select-add-wrap">
-      <van-popover v-model:show="showPopover" placement="bottom-end" :actions="actions" @select="onSelect">
+      <van-popover v-model:show="showPopover" placement="bottom-end" :actions="actions" @select="addSelect">
         <template #reference>
           <van-icon size="25" :name="require('../../assets/add-icon.png')" class="add-icon"   />
         </template>
@@ -83,28 +83,6 @@
             </div>
             </router-link>
           </div>
-      </div>
-    </div>
-     <div class="card-wrap">
-      <div class="title-wrap">
-        <van-cell value="更多" is-link :icon="require('../../assets/circle.png')" size="15" >
-          <!-- 使用 title 插槽来自定义标题 -->
-          <template #title>
-            <span class="course-title">社团</span>
-            <span class="course-eng">Association</span>
-          </template>
-        </van-cell>
-      </div>
-      <div class="card-list-wrap">
-        <div class="card-item-wrap"
-          v-for="(item, index) in associationList"
-          :key="index" >
-          <van-image :src="item.img" class="card-img" />
-          <div class="info-wrap">
-            <van-icon size="25" :name="require('../../assets//add-icon.png')" class="info-type-icon"   />
-            <span class="grade">{{item.name}}</span>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -170,14 +148,36 @@ export default {
     const showPopover = ref(false)
     // 通过 actions 属性来定义菜单选项
     const actions = [
-      { text: '创建课程' },
-      { text: '创建社团' }
+      { text: '创建课程', id: '1' },
+      { text: '创建社团', id: '2' }
     ]
-    const onSelect = (action) => Toast(action.text)
     return {
       actions,
-      onSelect,
       showPopover
+    }
+  },
+  methods: {
+    toExamAprove () {
+      this.$router.push({
+        name: 'examApproveIndex'
+      })
+    },
+    toCourseList () {
+      this.$router.push({
+        name: 'courseListIndex'
+      })
+    },
+    addSelect (actions) {
+      if (actions.id === '1') {
+        this.$router.push({
+          name: 'createCourseIndex'
+        })
+      }
+      if (actions.id === '2') {
+        this.$router.push({
+          name: 'createAssociationIndex'
+        })
+      }
     }
   }
 }

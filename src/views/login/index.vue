@@ -22,7 +22,7 @@
        <van-button plain type="primary" size="mini" class="forget-code">忘记密码</van-button>
     </div>
     <div class="login-btn-wrap">
-      <van-button type="primary" block round class="login-btn">登录</van-button>
+      <van-button type="primary" block round class="login-btn" @click="toIndex">登录</van-button>
     </div>
   </div>
 </template>
@@ -47,6 +47,13 @@ export default {
       value2
     }
   },
+  methods: {
+    toIndex () {
+      this.$router.push({
+        name: 'home'
+      })
+    }
+  },
   data () {
     return {
       user: {
@@ -60,6 +67,7 @@ export default {
 
 <style scoped lang="less">
 .login-container {
+  background-color: white;
   .icon-wrap{
     margin: 20px 0;
     text-align: center;

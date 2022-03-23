@@ -40,9 +40,9 @@ const routes = [
     component: () => import('@/views/home/courseInfo')
   },
   {
-    path: '/detailIndex',
+    path: '/detailInfo',
     name: 'detailInfoIndex',
-    component: () => import('@/views/discipline/detailIndex')
+    component: () => import('@/views/discipline/detailInfo')
   },
   {
     path: '/commentStatistics',
@@ -53,6 +53,46 @@ const routes = [
     path: '/finalExam',
     name: 'finalExamIndex',
     component: () => import('@/views/home/finalExam')
+  },
+  {
+    path: '/finalReport',
+    name: 'finalReportIndex',
+    component: () => import('@/views/home/finalReport')
+  },
+  {
+    path: '/finalReportDetail',
+    name: 'finalReportDetailIndex',
+    component: () => import('@/views/home/finalReportDetail')
+  },
+  {
+    path: '/examApprove',
+    name: 'examApproveIndex',
+    component: () => import('@/views/home/examApprove')
+  },
+  {
+    path: '/examApproveDetail',
+    name: 'examApproveDetailIndex',
+    component: () => import('@/views/home/examApproveDetail')
+  },
+  {
+    path: '/createCourse',
+    name: 'createCourseIndex',
+    component: () => import('@/views/home/createCourse')
+  },
+  {
+    path: '/createAssociation',
+    name: 'createAssociationIndex',
+    component: () => import('@/views/home/createAssociation')
+  },
+  {
+    path: '/commentCourse',
+    name: 'commentCourseIndex',
+    component: () => import('@/views/discipline/commentCourse')
+  },
+  {
+    path: '/courseList',
+    name: 'courseListIndex',
+    component: () => import('@/views/home/courseList')
   }
 ]
 

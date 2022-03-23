@@ -12,9 +12,9 @@
           <div class="score-info">分数<span class="score-number">{{item.score}}</span></div>
         </div>
         <div class="btn-wrap">
-          <div class="comment">点评</div>
+          <div class="comment" @click="toCommentCourse">点评</div>
           <div class="dis">｜</div>
-          <div class="detail">详情</div>
+          <div class="detail" @click="toDetailIndex">详情</div>
         </div>
       </div>
     </div>
@@ -58,6 +58,21 @@ export default {
           score: '92.6'
         }
       ]
+    }
+  },
+  methods: {
+    toCommentCourse () {
+      // this.$router.push({
+      //   name: 'examApproveIndex'
+      // })
+      this.$router.push({
+        name: 'commentCourseIndex'
+      })
+    },
+    toDetailIndex () {
+      this.$router.push({
+        name: 'detailInfoIndex'
+      })
     }
   }
 }

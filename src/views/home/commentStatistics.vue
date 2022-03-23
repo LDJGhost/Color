@@ -1,6 +1,6 @@
 <template>
   <div class="comment-statistics-container">
-    <van-nav-bar title="评价统计" left-text="返回" left-arrow >
+    <van-nav-bar title="评价统计" left-text="返回" left-arrow @click-left="ToBack">
     </van-nav-bar>
     <div class="swipe-wrap">
       <van-tabs v-model:active="active" color="#92bcdd" >
@@ -70,6 +70,7 @@ export default {
     [DropdownItem.name]: DropdownItem
   },
   setup () {
+    const ToBack = () => history.back()
     const value = ref('')
     const onSearch = (val) => Toast(val)
     const onClickButton = () => Toast(value.value)
@@ -99,6 +100,7 @@ export default {
     const showPopoverAdd = ref(false)
     const onSelectMore = (actionsAdd) => Toast(actionsAdd.text)
     return {
+      ToBack,
       value,
       onSearch,
       onClickButton,

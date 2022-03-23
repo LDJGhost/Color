@@ -82,6 +82,8 @@ export default {
     const active = ref(0)
     return { active }
   },
+  methods: {
+  },
   data () {
     return {
       info: {

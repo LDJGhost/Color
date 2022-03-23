@@ -1,6 +1,6 @@
 <template>
   <div class="course-info-container">
-    <van-nav-bar title="三年级 1班 语文 " left-text="返回" left-arrow  right-text="切换课程">
+    <van-nav-bar title="三年级 1班 语文 " left-text="返回" left-arrow  right-text="切换课程" @click-left="ToBack">
     </van-nav-bar>
     <div class="swipe-wrap">
       <div class="more-icon-popover">
@@ -11,18 +11,34 @@
         </van-popover>
       </div>
       <van-tabs v-model:active="active" color="#92bcdd" >
+      <!--排序面板-->
+        <van-action-sheet v-model:show="showFunnel" title="排序" class="funnel-content-wrap">
+          <van-checkbox-group v-model="checkedFunnel">
+            <van-checkbox name="a">按分数顺序</van-checkbox>
+            <van-checkbox name="b">按分数倒序</van-checkbox>
+            <van-checkbox name="c">按姓名首字母</van-checkbox>
+            <van-checkbox name="d">按学号</van-checkbox>
+          </van-checkbox-group>
+          <van-button type="primary" block class="sure-btn" @click="showFunnel = false">确定</van-button>
+        </van-action-sheet>
+      <!--添加学生Dialog-->
+      <van-dialog v-model:show="showAddStudent" title="添加学生" show-cancel-button confirmButtonText="添加">
+        <van-cell-group inset>
+          <!-- 输入任意文本 -->
+          <van-field v-model="studentName" label="学生名称" />
+          <!-- 允许输入数字，调起带符号的纯数字键盘 -->
+          <van-field v-model="studentNumber" type="number" label="学号" />
+          <!-- 输入密码 -->
+          <van-field v-model="studentIdentify" type="number" label="身份证后六位" />
+        </van-cell-group>
+      </van-dialog>
+      <!--学生批量点评Dialog-->
+      <!-- <van-dialog v-model:show="showAddStudent" title="点评" show-cancel-button confirmButtonText="添加">
+        <div class="name-list">(kkk,rer,erer)</div>
+      </van-dialog> -->
+
       <van-tab title="学生">
         <div class="student-wrap">
-          <!--排序面板-->
-          <van-action-sheet v-model:show="showFunnel" title="排序" class="funnel-content-wrap">
-            <van-checkbox-group v-model="checkedFunnel">
-              <van-checkbox name="a">按分数顺序</van-checkbox>
-              <van-checkbox name="b">按分数倒序</van-checkbox>
-              <van-checkbox name="c">按姓名首字母</van-checkbox>
-              <van-checkbox name="d">按学号</van-checkbox>
-            </van-checkbox-group>
-            <van-button type="primary" block class="sure-btn" @click="showFunnel = false">确定</van-button>
-          </van-action-sheet>
           <van-search
             v-model="value"
             show-action
@@ -33,7 +49,7 @@
             <template #action>
               <div class='search-bar-icon-wrap'>
                 <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="onSelect"  >
+                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
                   <template #reference>
                      <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
                   </template>
@@ -88,8 +104,134 @@
           </van-sticky>
         </div>
       </van-tab>
-      <van-tab title="小组">内容 2</van-tab>
-      <van-tab title="成绩">内容 3</van-tab>
+      <van-tab title="小组">
+        <div class="student-wrap">
+          <van-search
+            v-model="value"
+            show-action
+            placeholder="请输入搜索关键词"
+            @search="onSearch"
+            class="search-bar-wrap"
+          >
+            <template #action>
+              <div class='search-bar-icon-wrap'>
+                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
+                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
+                  <template #reference>
+                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
+                  </template>
+                </van-popover>
+              </div>
+            </template>
+            <template #right-icon>
+              <div @click="onClickButton">搜索</div>
+            </template>
+          </van-search>
+          <van-cell title="批量点评" >
+            <template #value>
+              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box'></van-checkbox>
+            </template>
+          </van-cell>
+          <div class="student-list-wrap">
+            <van-checkbox-group v-model="checked">
+              <van-cell-group >
+                <van-cell class="student-item-wrap"
+                v-for="(item, index) in groupList"
+                :key="index" >
+                  <template #icon>
+                    <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
+                  </template>
+                  <template #title>
+                    <div class="student-info-wrap">
+                      <div class="student-name-wrap">
+                        <span class="name">{{item.name}}</span>
+                      </div>
+                      <div class="student-score-wrap">
+                        <span class="student-score-title">{{item.detail}}</span>
+                      </div>
+                    </div>
+                  </template>
+                  <template #value>
+                    <van-checkbox v-model="checked" shape="square" :name="item"
+                    :ref="el => checkboxRefs[index] = el"
+                    @click.stop
+                    ></van-checkbox>
+                  </template>
+                </van-cell>
+              </van-cell-group>
+            </van-checkbox-group>
+          </div>
+          <van-sticky :offset-bottom="15" position="bottom">
+            <div class="many-comment">
+               <van-button type="primary" block class="many-comment-btn">批量点评</van-button>
+            </div>
+          </van-sticky>
+        </div>
+      </van-tab>
+      <van-tab title="成绩">
+        <div class="student-wrap">
+          <van-search
+            v-model="value"
+            show-action
+            placeholder="请输入搜索关键词"
+            @search="onSearch"
+            class="search-bar-wrap"
+          >
+            <template #action>
+              <div class='search-bar-icon-wrap'>
+                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
+                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
+                  <template #reference>
+                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
+                  </template>
+                </van-popover>
+              </div>
+            </template>
+            <template #right-icon>
+              <div @click="onClickButton">搜索</div>
+            </template>
+          </van-search>
+          <van-cell title="批量点评" >
+            <template #value>
+              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box'></van-checkbox>
+            </template>
+          </van-cell>
+          <div class="student-list-wrap">
+            <van-checkbox-group v-model="checked">
+              <van-cell-group >
+                <van-cell class="student-item-wrap"
+                v-for="(item, index) in scoreList"
+                :key="index" >
+                  <template #icon>
+                    <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
+                  </template>
+                  <template #title>
+                    <div class="student-info-wrap">
+                      <div class="student-name-wrap">
+                        <span class="name">{{item.name}}</span>
+                      </div>
+                      <div class="student-score-wrap">
+                        <span class="student-score-title">{{item.detail}}</span>
+                      </div>
+                    </div>
+                  </template>
+                  <template #value>
+                    <van-checkbox v-model="checked" shape="square" :name="item"
+                    :ref="el => checkboxRefs[index] = el"
+                    @click.stop
+                    ></van-checkbox>
+                  </template>
+                </van-cell>
+              </van-cell-group>
+            </van-checkbox-group>
+          </div>
+          <van-sticky :offset-bottom="15" position="bottom">
+            <div class="many-comment">
+               <van-button type="primary" block class="many-comment-btn">批量点评</van-button>
+            </div>
+          </van-sticky>
+        </div>
+      </van-tab>
       <van-tab title="通知">
         <div class="notice-wrap">
           <van-search
@@ -102,9 +244,9 @@
             <template #action>
               <div class='search-bar-icon-wrap'>
                 <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="onSelect"  >
+                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
                   <template #reference>
-                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
+                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon" />
                   </template>
                 </van-popover>
               </div>
@@ -138,7 +280,7 @@
 
 <script>
 import { ref, onBeforeUpdate } from 'vue'
-import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, Cell, CellGroup, Popover, ActionSheet, Sticky } from 'vant'
+import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field } from 'vant'
 export default {
   name: 'CourseInfoIndex',
   components: {
@@ -157,7 +299,10 @@ export default {
     [CellGroup.name]: CellGroup,
     [Popover.name]: Popover,
     [ActionSheet.name]: ActionSheet,
-    [Sticky.name]: Sticky
+    [Sticky.name]: Sticky,
+    [Dialog.name]: Dialog,
+    [Field.name]: Field,
+    'van-dialog': Dialog.Component
   },
   setup () {
     const value = ref('')
@@ -184,12 +329,21 @@ export default {
       { text: '期末报告', id: '3' }
     ]
     const actionsAdd = [
-      { text: '添加学生' },
-      { text: '批量导入' }
+      { text: '添加学生', icon: 'add-o', id: '1' },
+      { text: '批量导入', icon: 'upgrade', id: '2' }
     ]
     const onSelect = (action) => Toast(action.text)
-    // selectMore(actionsMore) {
-    // }
+
+    const showAddStudent = ref(false)
+    // 添加学生信息
+    const studentName = ref('')
+    const studentNumber = ref('')
+    const studentIdentify = ref('')
+    const addFill = (actionsAdd) => {
+      if (actionsAdd.id === '1') {
+        showAddStudent.value = true // 修改setup的值 要加上.value 踩坑了！！
+      }
+    }
     return {
       value,
       onSearch,
@@ -204,7 +358,12 @@ export default {
       onSelect,
       showPopoverMore,
       showPopoverAdd,
-      checkedFunnel
+      checkedFunnel,
+      showAddStudent,
+      studentName,
+      studentNumber,
+      studentIdentify,
+      addFill
     }
   },
   methods: {
@@ -221,6 +380,14 @@ export default {
           name: 'finalExamIndex'
         })
       }
+      if (actionsMore.id === '3') {
+        this.$router.push({
+          name: 'finalReportIndex'
+        })
+      }
+    },
+    ToBack () {
+      history.back()
     }
   },
   data () {
@@ -307,6 +474,23 @@ export default {
         }
 
       ],
+      groupList: [
+        { id: 1, name: '火箭队', detail: '111222333' },
+        { id: 1, name: '火箭队', detail: '111222333' },
+        { id: 1, name: '火箭队', detail: '111222333' },
+        { id: 1, name: '火箭队', detail: '111222333' },
+        { id: 1, name: '火箭队', detail: '111222333' }
+      ],
+      scoreList: [
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' },
+        { id: 1, name: '三年级一班 语文', detail: '第二周' }
+      ],
       noticeList: [
         {
           id: '123',
@@ -334,8 +518,7 @@ export default {
     position: absolute;
     z-index: 3;
   }
-  .student-wrap{
-    .funnel-content-wrap{
+  .funnel-content-wrap{
       font-size:15px;
       .van-action-sheet__content {
           margin-left: 16px;
@@ -349,7 +532,8 @@ export default {
         margin-bottom: 30px;
         width: 95%;
       }
-    }
+  }
+  .student-wrap{
     .many-comment{
       display: flex;
       padding: 0 20px;
