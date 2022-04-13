@@ -22,7 +22,7 @@
           <van-button type="primary" block class="sure-btn" @click="showFunnel = false">确定</van-button>
         </van-action-sheet>
       <!--添加学生Dialog-->
-      <van-dialog v-model:show="showAddStudent" title="添加学生" show-cancel-button confirmButtonText="添加">
+      <van-dialog v-model:show="showAddStudent" title="添加学生" :beforeClose="addStudent" show-cancel-button confirmButtonText="添加">
         <van-cell-group inset>
           <!-- 输入任意文本 -->
           <van-field v-model="studentName" label="学生名称" />
@@ -62,15 +62,15 @@
           </van-search>
           <van-cell title="批量点评" >
             <template #value>
-              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box'></van-checkbox>
+              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box' @click="checkAll"></van-checkbox>
             </template>
           </van-cell>
           <div class="student-list-wrap">
-            <van-checkbox-group v-model="checked">
+            <van-checkbox-group v-model="checked" ref="checkboxGroup">
               <van-cell-group >
                 <van-cell class="student-item-wrap"
                 v-for="(item, index) in studentList"
-                :key="index" >
+                :key="index">
                   <template #icon>
                     <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
                   </template>
@@ -88,18 +88,21 @@
                     </div>
                   </template>
                   <template #value>
-                    <van-checkbox v-model="checked" shape="square" :name="item"
-                    :ref="el => checkboxRefs[index] = el"
-                    @click.stop
-                    ></van-checkbox>
+                    <van-checkbox
+                      shape="square"
+                      :name="index"
+                      :ref="el => checkboxRefs[index] = el"
+                      @click.stop="toggle(index)"
+                    />
                   </template>
                 </van-cell>
+
               </van-cell-group>
             </van-checkbox-group>
           </div>
           <van-sticky :offset-bottom="15" position="bottom">
             <div class="many-comment">
-               <van-button type="primary" block class="many-comment-btn">批量点评</van-button>
+               <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
             </div>
           </van-sticky>
         </div>
@@ -163,7 +166,7 @@
           </div>
           <van-sticky :offset-bottom="15" position="bottom">
             <div class="many-comment">
-               <van-button type="primary" block class="many-comment-btn">批量点评</van-button>
+               <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
             </div>
           </van-sticky>
         </div>
@@ -279,8 +282,9 @@
 </template>
 
 <script>
-import { ref, onBeforeUpdate } from 'vue'
-import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field } from 'vant'
+import { useRouter } from 'vue-router'
+import { ref, onBeforeUpdate, reactive } from 'vue'
+import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, CheckboxGroup, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field } from 'vant'
 export default {
   name: 'CourseInfoIndex',
   components: {
@@ -295,6 +299,7 @@ export default {
     [Tabs.name]: Tabs,
     [Search.name]: Search,
     [Checkbox.name]: Checkbox,
+    [CheckboxGroup.name]: CheckboxGroup,
     [Cell.name]: Cell,
     [CellGroup.name]: CellGroup,
     [Popover.name]: Popover,
@@ -305,16 +310,75 @@ export default {
     'van-dialog': Dialog.Component
   },
   setup () {
+    const router = useRouter()
+    const studentList = reactive([
+      {
+        id: 1,
+        sname: '一',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 2,
+        sname: '二二',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 3,
+        sname: '三三三',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 4,
+        sname: '四四四四',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 5,
+        sname: '李嘉粤',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 6,
+        sname: '李嘉粤',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 7,
+        sname: '李嘉粤',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 8,
+        sname: '李嘉粤',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }, {
+        id: 9,
+        sname: '李嘉粤',
+        sid: '1801050068',
+        score: '10',
+        time: '1'
+      }
+    ])
     const value = ref('')
     const onSearch = (val) => Toast(val)
     const onClickButton = () => Toast(value.value)
     const showFunnel = ref(false)
-    const checkedAll = ref(true) // 批量选择
+    const checkedAll = ref(false) // 批量选择
     const checked = ref([])
     const checkedFunnel = ref([])
     const checkboxRefs = ref([])
     const toggle = (index) => {
       checkboxRefs.value[index].toggle()
+      console.log(index)
     }
     onBeforeUpdate(() => {
       checkboxRefs.value = []
@@ -344,6 +408,48 @@ export default {
         showAddStudent.value = true // 修改setup的值 要加上.value 踩坑了！！
       }
     }
+    const addStudent = (action) => {
+      if (action === 'confirm') {
+        const Stu = {
+          id: 10,
+          sname: studentName.value,
+          sid: studentNumber.value,
+          score: '0',
+          time: '0'
+        }
+        studentList.push(Stu)
+        studentName.value = ''
+        studentNumber.value = ''
+        studentIdentify.value = ''
+        showAddStudent.value = false
+      } else {
+        console.log('cancel')
+        showAddStudent.value = false
+      }
+    }
+    const checkboxGroup = ref(null)
+    const checkAll = () => {
+      if (checkedAll.value !== false) {
+        checkboxGroup.value.toggleAll(true)
+      } else {
+        checkboxGroup.value.toggleAll()
+      }
+    }
+    const enterEvaluation = () => {
+      const evaluations = []
+      console.log(checked)
+      checked.value.forEach((item) => {
+        evaluations.push(studentList[item])
+        console.log(studentList, studentList[item], item)
+      })
+      console.log(evaluations)
+      router.push({
+        name: 'associationEvaluation',
+        query: {
+          evaluations: JSON.stringify(evaluations)
+        }
+      })
+    }
     return {
       value,
       onSearch,
@@ -352,7 +458,6 @@ export default {
       toggle,
       checked,
       checkboxRefs,
-      checkedAll,
       actionsMore,
       actionsAdd,
       onSelect,
@@ -363,7 +468,13 @@ export default {
       studentName,
       studentNumber,
       studentIdentify,
-      addFill
+      addFill,
+      addStudent,
+      studentList,
+      checkedAll,
+      checkAll,
+      checkboxGroup,
+      enterEvaluation
     }
   },
   methods: {
@@ -416,64 +527,63 @@ export default {
           teacher: '李某某'
         }
       ],
-      studentList: [
-        {
-          id: 1,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 2,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 3,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }, {
-          id: 4,
-          sname: '李嘉粤',
-          sid: '1801050068',
-          score: '10',
-          time: '1'
-        }
-
-      ],
+      // studentList: [
+      //   {
+      //     id: 1,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 2,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 3,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 4,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 5,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 6,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 7,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 8,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }, {
+      //     id: 9,
+      //     sname: '李嘉粤',
+      //     sid: '1801050068',
+      //     score: '10',
+      //     time: '1'
+      //   }
+      // ],
       groupList: [
         { id: 1, name: '火箭队', detail: '111222333' },
         { id: 1, name: '火箭队', detail: '111222333' },
@@ -658,4 +768,4 @@ export default {
     }
   }
 }
-</style>
+</style >

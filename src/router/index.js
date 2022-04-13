@@ -40,6 +40,11 @@ const routes = [
     component: () => import('@/views/home/courseInfo')
   },
   {
+    path: '/associationEvaluation',
+    name: 'associationEvaluation',
+    component: () => import('@/views/home/associationEvaluation')
+  },
+  {
     path: '/detailInfo',
     name: 'detailInfoIndex',
     component: () => import('@/views/discipline/detailInfo')
