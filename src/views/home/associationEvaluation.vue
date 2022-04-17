@@ -4,12 +4,11 @@
     </van-nav-bar>
     <div class="swipe-wrap">
       <van-dropdown-menu>
-        <van-dropdown-item title="学生列表" ref="item">
+        <van-dropdown-item title="学生列表" ref="item" color="#92bcdd">
           <div class="StudentList">
-            <div class="StudentContainer" v-for="item in studentList" :key="item.id">
+            <div class="StudentContainer" v-for="item in studentList" :key="item.id" >
               {{ item.sname }}
-<!--              <img class="delete" src="../../assets/img/delete.png">-->
-              <van-icon name="clear" size="15" color="#1989fa" class="delete"/>
+              <van-icon name="clear" size="15" color="#1989fa" class="delete" @click.stop="removeStudent(item.id)"/>
             </div>
           </div>
         </van-dropdown-item>
@@ -194,7 +193,7 @@
 </template>
 
 <script>
-import { ref, onBeforeUpdate, reactive, nextTick } from 'vue'
+import { ref, onBeforeUpdate, reactive, nextTick, onBeforeMount } from 'vue'
 import { NavBar, Toast, Grid, GridItem, Icon, DropdownMenu, DropdownItem, Image, Button, Tab, Tabs, Search, Checkbox, CheckboxGroup, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field, Radio, RadioGroup, Divider } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import * as echarts from 'echarts'
@@ -234,19 +233,27 @@ export default {
           const myChart = echarts.init(document.getElementById('chart'))
           // 绘制图表
           myChart.setOption({
-            color: ['#D8FF98', '#EC8093', '#FF917C'],
+            color: ['#91cc75', '#ee6666', '#ffdc60'],
             tooltip: {
               trigger: 'item'
             },
             legend: {
-              top: '90%',
-              left: 'center'
+              orient: 'vertical',
+              // itemWidth: 30,
+              // itemHeight: 20,
+              top: '15%',
+              left: '50%'
+              // itemGap: 15,
+              // textStyle: {
+              //   fontSize: 15
+              // }
             },
             series: [
               {
                 name: 'Access From',
                 type: 'pie',
                 radius: ['40%', '70%'],
+                right: '50%',
                 avoidLabelOverlap: false,
                 itemStyle: {
                   borderRadius: 10,
@@ -260,7 +267,7 @@ export default {
                 emphasis: {
                   label: {
                     show: true,
-                    fontSize: '40',
+                    fontSize: '10',
                     fontWeight: 'bold'
                   }
                 },
@@ -452,22 +459,37 @@ export default {
         showAddEvaluation.value = false
       }
     }
-    let studentList = reactive([{ id: '888', name: '888' }])
+    const studentList = reactive([])
     const showHistory = ref(false)
 
     const queryStudents = reactive([])
-
-    studentList = JSON.parse(route.query.evaluations)
-    if (studentList.length === 1) {
-      showHistory.value = true
-      console.log('@@@1')
-    } else {
-      console.log('@@@n')
+    const into = () => {
+      const data = JSON.parse(route.query.evaluations)
+      data.forEach((item) => {
+        studentList.push(item)
+      })
+      console.log('%%%', studentList.length)
+      if (studentList.length === 1) {
+        showHistory.value = true
+        console.log('@@@1')
+      } else {
+        console.log('@@@n')
+      }
     }
-    console.log(studentList)
+    const removeStudent = (id) => {
+      for (let i = 0; i < studentList.length; i++) {
+        if (studentList[i].id === id) {
+          studentList.splice(i, 1)
+        }
+      }
+      console.log(studentList)
+    }
     const ToBack = () => {
       router.back()
     }
+    onBeforeMount(() => {
+      into()
+    })
 
     return {
       testChart,
@@ -500,6 +522,7 @@ export default {
       showHistory,
       studentList,
       historyList,
+      removeStudent,
       ToBack
     }
   }

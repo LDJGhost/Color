@@ -75,7 +75,7 @@
           <div class="card-item-wrap"
             v-for="(item, index) in associationList"
             :key="index" >
-            <router-link :to="{name:'courseInfoIndex',params:{id:item.code}}" >
+            <router-link :to="{name:'associationInfo',params:{id:item.code}}" >
             <van-image :src="item.img" class="card-img" />
             <div class="info-wrap">
               <van-icon size="25" :name="require('../../assets//add-icon.png')" class="info-type-icon"   />

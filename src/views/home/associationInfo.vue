@@ -11,7 +11,7 @@
         </van-popover>
       </div>
       <van-tabs v-model:active="active" color="#92bcdd" >
-      <!--排序面板-->
+        <!--排序面板-->
         <van-action-sheet v-model:show="showFunnel" title="排序" class="funnel-content-wrap">
           <van-checkbox-group v-model="checkedFunnel">
             <van-checkbox name="a">按分数顺序</van-checkbox>
@@ -21,7 +21,7 @@
           </van-checkbox-group>
           <van-button type="primary" block class="sure-btn" @click="showFunnel = false">确定</van-button>
         </van-action-sheet>
-      <!--添加学生Dialog-->
+        <!--添加学生Dialog-->
         <van-dialog v-model:show="showAddStudent" title="添加学生" :beforeClose="addStudent" show-cancel-button confirmButtonText="添加">
           <van-cell-group inset>
             <!-- 输入任意文本 -->
@@ -42,243 +42,179 @@
             <div></div>
           </van-cell-group>
         </van-dialog>
-      <van-tab title="学生">
-        <div class="student-wrap">
-          <van-search
-            v-model="value"
-            show-action
-            placeholder="请输入搜索关键词"
-            @search="onSearch"
-            class="search-bar-wrap">
-            <template #action>
-              <div class='search-bar-icon-wrap'>
-                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
-                  <template #reference>
-                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
-                  </template>
-                </van-popover>
-              </div>
-            </template>
-            <template #right-icon>
-              <div @click="onClickButton">搜索</div>
-            </template>
-          </van-search>
-          <van-cell title="批量点评" >
-            <template #value>
-              <van-checkbox v-model="isStudentCheckAll" shape="square" class='select-all-box' @click="studentCheckAll"></van-checkbox>
-            </template>
-          </van-cell>
-          <div class="student-list-wrap">
-            <van-checkbox-group v-model="studentChecked" ref="studentGroup">
-              <van-cell-group >
-                <van-cell class="student-item-wrap"
-                v-for="(item, index) in studentList"
-                :key="index">
-                  <template #icon>
-                    <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
-                  </template>
-                  <template #title>
-                    <div class="student-info-wrap">
-                      <div class="student-name-wrap">
-                        <span class="name">{{item.sname}}</span>
-                        <span class="number">{{item.snumber}}</span>
-                      </div>
-                      <div class="student-score-wrap">
-                        <span class="student-score-title">得分</span>
-                        <span class="score">{{item.score}}</span>
-                        <span class="time">{{item.time}}</span>
-                      </div>
-                    </div>
-                  </template>
-                  <template #value>
-                    <van-checkbox
-                      shape="square"
-                      :name="index"
-                      :ref="el => checkboxRefs[index] = el"
-                      @click.stop="toggle(index)"
-                    />
-                  </template>
-                </van-cell>
-
-              </van-cell-group>
-            </van-checkbox-group>
-          </div>
-          <van-sticky :offset-bottom="15" position="bottom">
-            <div class="many-comment">
-               <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
-            </div>
-          </van-sticky>
-        </div>
-      </van-tab>
-      <van-tab title="小组">
-        <div class="student-wrap">
-          <van-search
-            v-model="value"
-            show-action
-            placeholder="请输入搜索关键词"
-            @search="onSearch"
-            class="search-bar-wrap">
-            <template #action>
-              <div class='search-bar-icon-wrap'>
-                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true"/>
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill">
-                  <template #reference>
-                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
-                  </template>
-                </van-popover>
-              </div>
-            </template>
-            <template #right-icon>
-              <div @click="onClickButton">搜索</div>
-            </template>
-          </van-search>
-          <van-cell title="批量点评" >
-            <template #value>
-              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box'></van-checkbox>
-            </template>
-          </van-cell>
-          <div class="student-list-wrap">
-            <van-checkbox-group v-model="groupChecked">
-              <van-cell-group >
-                <van-cell class="student-item-wrap"
-                v-for="(item, index) in groupList"
-                :key="index" >
-                  <template #icon>
-                    <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
-                  </template>
-                  <template #title>
-                    <div class="student-info-wrap">
-                      <div class="student-name-wrap">
-                        <span class="name">{{item.name}}</span>
-                      </div>
-                      <div class="student-score-wrap">
-                        <span class="student-score-title">{{item.detail}}</span>
-                      </div>
-                    </div>
-                  </template>
-                  <template #value>
-                    <van-checkbox shape="square" :name="index"
-                    :ref="el => checkboxRefs[index] = el"
-                    @click.stop
-                    ></van-checkbox>
-                  </template>
-                </van-cell>
-              </van-cell-group>
-            </van-checkbox-group>
-          </div>
-          <van-sticky :offset-bottom="15" position="bottom">
-            <div class="many-comment">
-               <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
-            </div>
-          </van-sticky>
-        </div>
-      </van-tab>
-      <van-tab title="成绩">
-        <div class="student-wrap">
-          <van-search
-            v-model="value"
-            show-action
-            placeholder="请输入搜索关键词"
-            @search="onSearch"
-            class="search-bar-wrap"
-          >
-            <template #action>
-              <div class='search-bar-icon-wrap'>
-                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
-                  <template #reference>
-                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
-                  </template>
-                </van-popover>
-              </div>
-            </template>
-            <template #right-icon>
-              <div @click="onClickButton">搜索</div>
-            </template>
-          </van-search>
-          <van-cell title="批量点评" >
-            <template #value>
-              <van-checkbox v-model="checkedAll" shape="square" class='select-all-box'></van-checkbox>
-            </template>
-          </van-cell>
-          <div class="student-list-wrap">
-            <van-checkbox-group v-model="gradeChecked">
-              <van-cell-group >
-                <van-cell class="student-item-wrap"
-                v-for="(item, index) in scoreList"
-                :key="index" >
-                  <template #icon>
-                    <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
-                  </template>
-                  <template #title>
-                    <div class="student-info-wrap">
-                      <div class="student-name-wrap">
-                        <span class="name">{{item.name}}</span>
-                      </div>
-                      <div class="student-score-wrap">
-                        <span class="student-score-title">{{item.detail}}</span>
-                      </div>
-                    </div>
-                  </template>
-                  <template #value>
-                    <van-checkbox shape="square" :name="index"
-                    :ref="el => checkboxRefs[index] = el"
-                    @click.stop
-                    ></van-checkbox>
-                  </template>
-                </van-cell>
-              </van-cell-group>
-            </van-checkbox-group>
-          </div>
-          <van-sticky :offset-bottom="15" position="bottom">
-            <div class="many-comment">
-               <van-button type="primary" block class="many-comment-btn">批量点评</van-button>
-            </div>
-          </van-sticky>
-        </div>
-      </van-tab>
-      <van-tab title="通知">
-        <div class="notice-wrap">
-          <van-search
-            v-model="value"
-            show-action
-            placeholder="请输入搜索关键词"
-            @search="onSearch"
-            class="search-bar-wrap"
-          >
-            <template #action>
-              <div class='search-bar-icon-wrap'>
-                <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
-                <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
-                  <template #reference>
-                     <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon" />
-                  </template>
-                </van-popover>
-              </div>
-            </template>
-            <template #right-icon>
-              <div @click="onClickButton">搜索</div>
-            </template>
-          </van-search>
-          <div class="notice-list-wrap">
-            <div class="notice-item-wrap"
-              v-for="(item, index) in noticeList"
-              :key="index" >
-              <div class="top-notice-wrap">
-                <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="notice-img" />
-                <div class="notice-info-wrap">
-                  <div class="notice-name-wrap">{{item.name}}</div>
-                  <div class="notice-time-wrap">{{item.time}}</div>
+        <van-tab title="学生">
+          <div class="student-wrap">
+            <van-search
+              v-model="value"
+              show-action
+              placeholder="请输入搜索关键词"
+              @search="onSearch"
+              class="search-bar-wrap">
+              <template #action>
+                <div class='search-bar-icon-wrap'>
+                  <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
+                  <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
+                    <template #reference>
+                      <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
+                    </template>
+                  </van-popover>
                 </div>
-                <div class="delete-btn">删除</div>
+              </template>
+              <template #right-icon>
+                <div @click="onClickButton">搜索</div>
+              </template>
+            </van-search>
+            <van-cell title="批量点评" >
+              <template #value>
+                <van-checkbox v-model="isStudentCheckAll" shape="square" class='select-all-box' @click="studentCheckAll"></van-checkbox>
+              </template>
+            </van-cell>
+            <div class="student-list-wrap">
+              <van-checkbox-group v-model="studentChecked" ref="studentGroup">
+                <van-cell-group >
+                  <van-cell class="student-item-wrap"
+                            v-for="(item, index) in studentList"
+                            :key="index">
+                    <template #icon>
+                      <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
+                    </template>
+                    <template #title>
+                      <div class="student-info-wrap">
+                        <div class="student-name-wrap">
+                          <span class="name">{{item.sname}}</span>
+                          <span class="number">{{item.snumber}}</span>
+                        </div>
+                        <div class="student-score-wrap">
+                          <span class="student-score-title">得分</span>
+                          <span class="score">{{item.score}}</span>
+                          <span class="time">{{item.time}}</span>
+                        </div>
+                      </div>
+                    </template>
+                    <template #value>
+                      <van-checkbox
+                        shape="square"
+                        :name="index"
+                        :ref="el => checkboxRefs[index] = el"
+                        @click.stop="toggle(index)"
+                      />
+                    </template>
+                  </van-cell>
+
+                </van-cell-group>
+              </van-checkbox-group>
+            </div>
+            <van-sticky :offset-bottom="15" position="bottom">
+              <div class="many-comment">
+                <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
               </div>
-              <div class="notice-content">{{item.content}}</div>
+            </van-sticky>
+          </div>
+        </van-tab>
+        <van-tab title="小组">
+          <div class="student-wrap">
+            <van-search
+              v-model="value"
+              show-action
+              placeholder="请输入搜索关键词"
+              @search="onSearch"
+              class="search-bar-wrap">
+              <template #action>
+                <div class='search-bar-icon-wrap'>
+                  <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true"/>
+                  <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill">
+                    <template #reference>
+                      <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
+                    </template>
+                  </van-popover>
+                </div>
+              </template>
+              <template #right-icon>
+                <div @click="onClickButton">搜索</div>
+              </template>
+            </van-search>
+            <van-cell title="批量点评" >
+              <template #value>
+                <van-checkbox v-model="isGroupCheckAll" shape="square" class='select-all-box' @click="groupCheckAll"></van-checkbox>
+              </template>
+            </van-cell>
+            <div class="student-list-wrap">
+              <van-checkbox-group v-model="groupChecked" ref="groupGroup">
+                <van-cell-group >
+                  <van-cell class="student-item-wrap"
+                            v-for="(item, index) in groupList"
+                            :key="index" >
+                    <template #icon>
+                      <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="studednt-img" />
+                    </template>
+                    <template #title>
+                      <div class="student-info-wrap">
+                        <div class="student-name-wrap">
+                          <span class="name">{{item.name}}</span>
+                        </div>
+                        <div class="student-score-wrap">
+                          <span class="student-score-title">{{item.detail}}</span>
+                        </div>
+                      </div>
+                    </template>
+                    <template #value>
+                      <van-checkbox shape="square" :name="index"
+                                    :ref="el => checkboxRefs[index] = el"
+                                    @click.stop
+                      ></van-checkbox>
+                    </template>
+                  </van-cell>
+                </van-cell-group>
+              </van-checkbox-group>
+            </div>
+            <van-sticky :offset-bottom="15" position="bottom">
+              <div class="many-comment">
+                <van-button type="primary" block class="many-comment-btn" @click="enterEvaluation">批量点评</van-button>
+              </div>
+            </van-sticky>
+          </div>
+        </van-tab>
+        <van-tab title="通知">
+          <div class="notice-wrap">
+            <van-search
+              v-model="value"
+              show-action
+              placeholder="请输入搜索关键词"
+              @search="onSearch"
+              class="search-bar-wrap"
+            >
+              <template #action>
+                <div class='search-bar-icon-wrap'>
+                  <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true" />
+                  <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill"  >
+                    <template #reference>
+                      <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon" />
+                    </template>
+                  </van-popover>
+                </div>
+              </template>
+              <template #right-icon>
+                <div @click="onClickButton">搜索</div>
+              </template>
+            </van-search>
+            <div class="notice-list-wrap">
+              <div class="notice-item-wrap"
+                   v-for="(item, index) in noticeList"
+                   :key="index" >
+                <div class="top-notice-wrap">
+                  <van-image  width="30px" height="30px" round :src="require('../../assets/head-img.jpeg')" class="notice-img" />
+                  <div class="notice-info-wrap">
+                    <div class="notice-name-wrap">{{item.name}}</div>
+                    <div class="notice-time-wrap">{{item.time}}</div>
+                  </div>
+                  <div class="delete-btn">删除</div>
+                </div>
+                <div class="notice-content">{{item.content}}</div>
+              </div>
             </div>
           </div>
-        </div>
-      </van-tab>
-      <!-- <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-icon"   /> -->
+        </van-tab>
+        <!-- <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-icon"   /> -->
       </van-tabs>
     </div>
   </div>
@@ -289,7 +225,7 @@ import { useRouter } from 'vue-router'
 import { ref, onBeforeUpdate, reactive } from 'vue'
 import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, CheckboxGroup, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field } from 'vant'
 export default {
-  name: 'CourseInfoIndex',
+  name: 'associationInfo',
   components: {
     [NavBar.name]: NavBar,
     [Toast.name]: Toast,
@@ -449,6 +385,7 @@ export default {
     const groupGroup = ref(null)
     const isGroupCheckAll = ref(false)
     const groupCheckAll = () => {
+      console.log('gAll')
       if (isGroupCheckAll.value !== false) {
         groupGroup.value.toggleAll(true)
       } else {
@@ -535,6 +472,7 @@ export default {
       groupSlogan,
       showAddGroup,
       groupCheckAll,
+      groupGroup,
       isGroupCheckAll,
       enterEvaluation
     }
@@ -627,19 +565,19 @@ export default {
     z-index: 3;
   }
   .funnel-content-wrap{
-      font-size:15px;
-      .van-action-sheet__content {
-          margin-left: 16px;
-      }
-      .van-checkbox {
-          margin: 10px;
-      }
-      .sure-btn{
-        border-radius: 20px;
-        margin-top: 20px;
-        margin-bottom: 30px;
-        width: 95%;
-      }
+    font-size:15px;
+    .van-action-sheet__content {
+      margin-left: 16px;
+    }
+    .van-checkbox {
+      margin: 10px;
+    }
+    .sure-btn{
+      border-radius: 20px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+      width: 95%;
+    }
   }
   .student-wrap{
     .many-comment{
@@ -669,16 +607,16 @@ export default {
       }
     }
     .van-checkbox {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
+      display: flex;
+      align-items: center;
+      margin-left: auto;
     }
     .van-tabs--line .van-tabs__wrap {
-    height: var(--van-tabs-line-height);
-    width: 80%;
+      height: var(--van-tabs-line-height);
+      width: 80%;
     }
     .van-cell__value {
-    display: flex;
+      display: flex;
     }
     .student-list-wrap{
       .student-item-wrap{
