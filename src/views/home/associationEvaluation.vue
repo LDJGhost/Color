@@ -287,14 +287,6 @@ export default {
       // const test = document.getElementById('chart')
       // console.log('@@@', test)
     }
-    // onMounted(() => { // 需要获取到element,所以是onMounted的Hook
-    //   // this.$nextTick() => {
-    //   //   const test = document.getElementById('chart')
-    //   //   console.log('@@@', test)
-    //   // }
-    //   console.log('onMounted')
-    //
-    // })
 
     const router = useRouter()
     const route = useRoute()

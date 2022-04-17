@@ -1,48 +1,39 @@
 <template>
   <div class="course-info-container">
-    <van-nav-bar title="三年级 1班 语文 " left-text="返回" left-arrow  right-text="切换课程" @click-left="ToBack">
+    <van-nav-bar title="英语社" left-text="返回" left-arrow @click-left="ToBack">
     </van-nav-bar>
     <div class="swipe-wrap">
-      <div class="more-icon-popover">
-        <van-popover v-model:show="showPopoverMore" placement="bottom-end" :actions="actionsMore" @select="selectMore" class="more-icon-popover"  >
-          <template #reference>
-            <van-icon size="25" :name="require('../../assets/more.png')"  />
-          </template>
-        </van-popover>
-      </div>
-      <van-tabs v-model:active="active" color="#92bcdd" >
+      <van-tabs v-model:active="ActiveIndex" color="#92bcdd" >
         <!--排序面板-->
         <van-action-sheet v-model:show="showFunnel" title="排序" class="funnel-content-wrap">
-          <van-checkbox-group v-model="checkedFunnel">
-            <van-checkbox name="a">按分数顺序</van-checkbox>
-            <van-checkbox name="b">按分数倒序</van-checkbox>
-            <van-checkbox name="c">按姓名首字母</van-checkbox>
-            <van-checkbox name="d">按学号</van-checkbox>
-          </van-checkbox-group>
-          <van-button type="primary" block class="sure-btn" @click="showFunnel = false">确定</van-button>
+          <van-radio-group v-model="checkedFunnel">
+            <van-radio name="a" style="margin-bottom: 20px">按分数升序</van-radio>
+            <van-radio name="b" style="margin-bottom: 20px">按分数降序</van-radio>
+            <van-radio name="c" style="margin-bottom: 20px">按姓名首字母</van-radio>
+            <van-radio name="d" style="margin-bottom: 20px">按学号</van-radio>
+          </van-radio-group>
+          <van-button type="primary" block class="sure-btn" @click="SortList">确定</van-button>
         </van-action-sheet>
         <!--添加学生Dialog-->
         <van-dialog v-model:show="showAddStudent" title="添加学生" :beforeClose="addStudent" show-cancel-button confirmButtonText="添加">
           <van-cell-group inset>
             <!-- 输入任意文本 -->
-            <van-field v-model="studentName" label="学生名称" />
+            <van-field v-model="studentName" label="学生名称" placeholder="请输入"/>
             <!-- 允许输入数字，调起带符号的纯数字键盘 -->
-            <van-field v-model="studentNumber" type="number" label="学号" />
+            <van-field v-model="studentNumber" type="number" label="学号" placeholder="请输入"/>
             <!-- 输入密码 -->
-            <van-field v-model="studentIdentify" type="number" label="身份证后六位" />
+            <van-field v-model="studentIdentify" type="number" label="身份证后六位" placeholder="请输入"/>
           </van-cell-group>
         </van-dialog>
         <van-dialog v-model:show="showAddGroup" title="添加社团" :beforeClose="addGroup" show-cancel-button confirmButtonText="添加">
           <van-cell-group inset>
             <!-- 输入任意文本 -->
-            <van-field v-model="groupName" label="小组名称" />
-            <!-- 允许输入数字，调起带符号的纯数字键盘 -->
-            <van-field v-model="groupSlogan" label="slogan" />
-            <!-- 输入密码 -->
-            <div></div>
+            <van-field v-model="groupName" label="小组名称" placeholder="请输入"/>
+            <van-field v-model="groupSlogan" label="slogan" placeholder="请输入"/>
+            <van-cell title="添加小组成员"  is-link value="请输入" to=""/>
           </van-cell-group>
         </van-dialog>
-        <van-tab title="学生">
+        <van-tab title="成员">
           <div class="student-wrap">
             <van-search
               v-model="value"
@@ -122,11 +113,7 @@
               <template #action>
                 <div class='search-bar-icon-wrap'>
                   <van-icon size="22" :name="require('../../assets/funnel.png')" class="funnel-icon" @click="showFunnel = true"/>
-                  <van-popover v-model:show="showPopoverAdd" placement="bottom-end" :actions="actionsAdd" @select="addFill">
-                    <template #reference>
-                      <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon"   />
-                    </template>
-                  </van-popover>
+                  <van-icon size="25" :name="require('../../assets/add-fill.png')" class="add-fill-icon" @click="showAddGroup = true"  />
                 </div>
               </template>
               <template #right-icon>
@@ -151,6 +138,14 @@
                       <div class="student-info-wrap">
                         <div class="student-name-wrap">
                           <span class="name">{{item.name}}</span>
+                          <span class="sum">人数{{item.students.length}}</span>
+                        </div>
+                        <div class="student-score-wrap">
+                          <span class="student-score-title">总得分</span>
+                          <span class="score">{{item.TotalScore}}</span>
+                          <span>| </span>
+                          <span>本周得分</span>
+                          <span class="score">{{item.score}}</span>
                         </div>
                         <div class="student-score-wrap">
                           <span class="student-score-title">{{item.detail}}</span>
@@ -223,7 +218,8 @@
 <script>
 import { useRouter } from 'vue-router'
 import { ref, onBeforeUpdate, reactive } from 'vue'
-import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, CheckboxGroup, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field } from 'vant'
+import { NavBar, Toast, Grid, GridItem, Icon, Image, Button, Tab, Tabs, Search, Checkbox, CheckboxGroup, Cell, CellGroup, Popover, ActionSheet, Sticky, Dialog, Field, RadioGroup, Radio } from 'vant'
+
 export default {
   name: 'associationInfo',
   components: {
@@ -246,9 +242,12 @@ export default {
     [Sticky.name]: Sticky,
     [Dialog.name]: Dialog,
     [Field.name]: Field,
+    [RadioGroup.name]: RadioGroup,
+    [Radio.name]: Radio,
     'van-dialog': Dialog.Component
   },
   setup () {
+    // const pinyin = require('pinyin')
     const router = useRouter()
     // ------------------ 学生----------------------
     // 添加学生
@@ -275,57 +274,57 @@ export default {
     const studentList = reactive([
       {
         id: 1,
-        sname: '一',
-        sid: '1801050068',
-        score: '10',
+        sname: '阿一',
+        sid: '1801050001',
+        score: 10,
         time: '1'
       }, {
         id: 2,
-        sname: '二二',
-        sid: '1801050068',
-        score: '10',
+        sname: '不二二',
+        sid: '1801050003',
+        score: 8,
         time: '1'
       }, {
         id: 3,
-        sname: '三三三',
-        sid: '1801050068',
-        score: '10',
+        sname: '陈三三三',
+        sid: '1801050002',
+        score: 6,
         time: '1'
       }, {
         id: 4,
-        sname: '四四四四',
-        sid: '1801050068',
-        score: '10',
+        sname: '大四四四四',
+        sid: '1801050007',
+        score: 0,
         time: '1'
       }, {
         id: 5,
-        sname: '李嘉粤',
-        sid: '1801050068',
-        score: '10',
+        sname: '阿李嘉粤',
+        sid: '1801050006',
+        score: 5,
         time: '1'
       }, {
         id: 6,
         sname: '李嘉粤',
-        sid: '1801050068',
-        score: '10',
+        sid: '1801050005',
+        score: 13,
         time: '1'
       }, {
         id: 7,
         sname: '李嘉粤',
-        sid: '1801050068',
-        score: '10',
+        sid: '1801050004',
+        score: 15,
         time: '1'
       }, {
         id: 8,
         sname: '李嘉粤',
-        sid: '1801050068',
-        score: '10',
+        sid: '1801050008',
+        score: 11,
         time: '1'
       }, {
         id: 9,
         sname: '李嘉粤',
-        sid: '1801050068',
-        score: '10',
+        sid: '1801050009',
+        score: 11,
         time: '1'
       }
     ])
@@ -355,6 +354,9 @@ export default {
         const Group = {
           id: 10,
           name: groupName.value,
+          students: [],
+          TotalScore: 0,
+          score: 0,
           detail: groupSlogan.value
         }
         groupList.push(Group)
@@ -368,11 +370,11 @@ export default {
     }
     // 社团列表
     const groupList = reactive([
-      { id: 1, name: '火箭队', detail: '111222333' },
-      { id: 1, name: '火箭队', detail: '111222333' },
-      { id: 1, name: '火箭队', detail: '111222333' },
-      { id: 1, name: '火箭队', detail: '111222333' },
-      { id: 1, name: '火箭队', detail: '111222333' }
+      { id: 1, name: '火箭队', students: ['123', '123', '123'], TotalScore: 19, score: 4, detail: '好好学习,天天向上' },
+      { id: 1, name: '火箭队', students: ['123', '123'], TotalScore: 19, score: 4, detail: '好好学习,天天向上' },
+      { id: 1, name: '火箭队', students: [], TotalScore: 19, score: 4, detail: '好好学习,天天向上' },
+      { id: 1, name: '火箭队', students: [], TotalScore: 19, score: 4, detail: '好好学习,天天向上' },
+      { id: 1, name: '火箭队', students: [], TotalScore: 19, score: 4, detail: '好好学习,天天向上' }
     ])
     // 学生dialog
     const showAddGroup = ref(false)
@@ -417,11 +419,36 @@ export default {
       })
     }
 
+    const ActiveIndex = ref(0)
     const value = ref('')
     const onSearch = (val) => Toast(val)
     const onClickButton = () => Toast(value.value)
     const showFunnel = ref(false)
-    const checkedFunnel = ref([])
+    const checkedFunnel = ref('')
+    const SortList = () => {
+      if (checkedFunnel.value === 'a') {
+        console.log('a')
+        studentList.sort(function (a, b) {
+          return a.score - b.score
+        })
+      } else if (checkedFunnel.value === 'b') {
+        console.log('b')
+        studentList.sort(function (a, b) {
+          return b.score - a.score
+        })
+      } else if (checkedFunnel.value === 'c') {
+        console.log('c')
+        studentList.sort(function (a, b) {
+          return a.sname.localeCompare(b.sname, 'zh-CN')
+        })
+      } else if (checkedFunnel.value === 'd') {
+        console.log('d')
+        studentList.sort(function (a, b) {
+          return a.sid - b.sid
+        })
+      }
+      showFunnel.value = false
+    }
     const showPopoverMore = ref(false)
     const showPopoverAdd = ref(false)
     // 通过 actions 属性来定义菜单选项
@@ -442,6 +469,8 @@ export default {
     }
 
     return {
+      SortList,
+      ActiveIndex,
       value,
       onSearch,
       showFunnel,
@@ -503,40 +532,6 @@ export default {
   },
   data () {
     return {
-      courseList: [
-        {
-          id: 1,
-          name: '一年级语文',
-          specific: '第一节课',
-          day: '12月21日',
-          week: '周二',
-          teacher: '李某某'
-        }, {
-          id: 2,
-          name: '一年级语文',
-          specific: '第一节课',
-          day: '12月21日',
-          week: '周二',
-          teacher: '李某某'
-        }, {
-          id: 3,
-          name: '一年级语文',
-          specific: '第一节课',
-          day: '12月21日',
-          week: '周二',
-          teacher: '李某某'
-        }
-      ],
-      scoreList: [
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' },
-        { id: 1, name: '三年级一班 语文', detail: '第二周' }
-      ],
       noticeList: [
         {
           id: '123',
@@ -549,12 +544,19 @@ export default {
   }
 }
 </script>
+<style>
+  .sum{
+    margin-left: 10px;
+    color: #969696;
+    font-size: 13px;
+  }
+</style>
 
 <style lang="less">
 .course-info-container{
   background-color: white;
   .van-tabs--line .van-tabs__wrap {
-    width: 90%;
+    width: 100%!important;
   }
   .more-icon-popover .van-popover__wrapper  {
     top: 47px;
